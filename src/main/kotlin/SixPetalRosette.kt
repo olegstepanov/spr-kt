@@ -7,8 +7,29 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class SixPetalRosette {
+class SixPetalRosette(val petalsNum: Int) {
     var color = Color.WHITE
+
+    companion object {
+        private val PETAL_WIDTH_TO_ROSETTE_SIZE_RATIO = 0.25 / sin(Math.PI / 6) * (1 - cos(Math.PI / 6)) * 2
+    }
+
+    fun paint(g: Graphics2D, bounds: Rectangle) {
+        g.color = color
+        val viewportBorder = 5
+        val viewportWidth = bounds.width - viewportBorder * 2
+        val rosetteSize =
+            (viewportWidth / (petalsNum * (1 - PETAL_WIDTH_TO_ROSETTE_SIZE_RATIO) + PETAL_WIDTH_TO_ROSETTE_SIZE_RATIO)).toInt()
+        val petalWidth = rosetteSize * PETAL_WIDTH_TO_ROSETTE_SIZE_RATIO + 1
+        for (j in 0..(petalsNum - 1)) {
+            val startX = rosetteSize / 2.0 + viewportBorder/* + j * (rosetteSize - petalWidth) / 2*/
+            val y = bounds.centerY - j * rosetteSize / 2
+            for (i in 0 until petalsNum) {
+                val centerX = startX + i * (rosetteSize - petalWidth)
+                drawRosette(g, centerX, y, rosetteSize)
+            }
+        }
+    }
 
     private fun drawArc(g: Graphics2D, size: Int) {
         val a = size / 2
@@ -39,12 +60,10 @@ class SixPetalRosette {
         g.translate(-x1, -y1)
     }
 
-    fun paint(g: Graphics2D, bounds: Rectangle) {
-        val petalSize = bounds.height / 2
+    private fun drawRosette(g: Graphics2D, centerX: Double, centerY: Double, rosetteSize: Int) {
+        g.translate(centerX, centerY)
 
-        g.color = color
-
-        g.translate(bounds.centerX, bounds.centerY)
+        val petalSize = rosetteSize / 2
 
         for (i in 1..6) {
             drawPetal(g, 0, 0, 0, -petalSize)
@@ -55,5 +74,7 @@ class SixPetalRosette {
             g.translate(0, petalSize)
             g.transform(AffineTransform.getRotateInstance(Math.PI / 3))
         }
+
+        g.translate(-centerX, -centerY)
     }
 }

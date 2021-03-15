@@ -9,7 +9,7 @@ object Application {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
         val imageCanvas = PainterCanvas()
-        imageCanvas.painter = SixPetalRosette()::paint
+        imageCanvas.painter = SixPetalRosette(10)::paint
         frame.add(imageCanvas)
 
         frame.isVisible = true
